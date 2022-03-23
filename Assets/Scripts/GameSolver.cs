@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 /// <summary>
@@ -13,10 +14,10 @@ public class GameSolver
     // Explored search nodes have their children resolved. Here we might also know whether they are a winning state or a losing state.
     private class SearchNode
     {
-        // The parent node from which this game state was first discovered. Does not change once assigned.
-        public GameState Parent;
-        // The move that led from parent to this child.
-        public Vector2Int PrevMove;
+        // List of parents that can lead to this game state within one move. Gets added to during the search.
+        public List<GameState> Parents;
+        // List of child states that is one step away from this state. Does not change or mutate once assigned.
+        // The presence of child nodes also indicates that a node has been fully explored.
         public List<GameState> Children;
         // Nulable int. If null, the state is not necessarily a winning state. If not null, indicates the minimum number of moves until a win.
         public int? WinDistance;
@@ -53,8 +54,7 @@ public class GameSolver
 
         _nodes.Add(_rootState, new SearchNode
         {
-            Parent = null,
-            PrevMove = Vector2Int.zero,
+            Parents = new List<GameState>(),
             Children = null,
             WinDistance = null,
             IsLoss = false
@@ -63,15 +63,15 @@ public class GameSolver
 
         while (_exploreQueue.Count > 0)
         {
-            GameState exploreState = _exploreQueue.Dequeue();
+            GameState currentState = _exploreQueue.Dequeue();
 
-            _gameLogic.LoadState(exploreState);
+            _gameLogic.LoadState(currentState);
 
             if (_gameLogic.IsWin())
             {
                 // Create an empty children array to indicate that the node has been fully explored.
-                _nodes[exploreState].Children = new List<GameState>();
-                PropagateWin(exploreState);
+                _nodes[currentState].Children = new List<GameState>();
+                PropagateWin(currentState, 0);
 
                 // We could go on and explore the entire state tree. This lets the solver provide advice every step of the way.
                 // We could also say "good enough, I know how to win" and stop here.
@@ -81,13 +81,13 @@ public class GameSolver
             else if (_gameLogic.IsLoss())
             {
                 // Create an empty children array to indicate that the node has been fully explored.
-                _nodes[exploreState].Children = new List<GameState>();
-                PropagateLoss(exploreState);
+                _nodes[currentState].Children = new List<GameState>();
+                PropagateLoss(currentState);
             }
             else
             {
-                SearchNode currentNode = _nodes[exploreState];
-                List<Tuple<Vector2Int, GameState>> childStates = GetCurrentChildren(exploreState);
+                SearchNode currentNode = _nodes[currentState];
+                List<Tuple<Vector2Int, GameState>> childStates = GetCurrentChildren(currentState);
                 currentNode.Children = new List<GameState>();
 
                 // If some or all children are fully explored, we might already know the win/loss situation.
@@ -100,6 +100,8 @@ public class GameSolver
                     if (_nodes.TryGetValue(childState.Item2, out SearchNode childNode))
                     {
                         // Child already discovered by another node
+                        childNode.Parents.Add(currentState);
+
                         if (childNode.WinDistance != null)
                         {
                             winDistance = winDistance == null ? childNode.WinDistance + 1 : Mathf.Min(winDistance.Value + 1, childNode.WinDistance.Value + 1);
@@ -114,8 +116,7 @@ public class GameSolver
                         // Child not yet discovered, add it to the state tree and queue it up for exploration.
                         _nodes.Add(childState.Item2, new SearchNode
                         {
-                            Parent = exploreState,
-                            PrevMove = childState.Item1
+                            Parents = new List<GameState> { currentState },
                         });
                         _exploreQueue.Enqueue(childState.Item2);
 
@@ -133,30 +134,26 @@ public class GameSolver
         Completed = true;
     }
 
-    private void PropagateWin(GameState winState)
+    private void PropagateWin(GameState winState, int winDistance)
     {
-        GameState currentState = winState;
-        int winDistance = 0;
+        SearchNode node = _nodes[winState];
+        if (node.WinDistance != null && node.WinDistance < winDistance) return; // It already has a better winning state
 
-        while (currentState != null)
+        node.WinDistance = winDistance;
+
+        foreach (GameState parentState in node.Parents)
         {
-            SearchNode node = _nodes[currentState];
-            if (node.WinDistance != null && node.WinDistance < winDistance) return; // It's a better winning state
-            node.WinDistance = winDistance;
-
-            currentState = node.Parent;
-            winDistance++;
+            PropagateWin(parentState, winDistance + 1);
         }
     }
 
     private void PropagateLoss(GameState lossState)
     {
         _nodes[lossState].IsLoss = true;
-        GameState currentState = _nodes[lossState].Parent;
 
-        while (currentState != null)
+        foreach (GameState parentState in _nodes[lossState].Parents)
         {
-            SearchNode node = _nodes[currentState];
+            SearchNode node = _nodes[parentState];
 
             // We already know this is a losing state. We also already went through its parent states at one point, we aren't adding any new information here.
             // Early return.
@@ -174,7 +171,8 @@ public class GameSolver
             // If the function reaches here, then no early return triggered and the node is actually a loss state.
             // Keep propagating upward.
             node.IsLoss = true;
-            currentState = node.Parent;
+
+            PropagateLoss(parentState);
         }
     }
 
@@ -242,7 +240,7 @@ public class GameSolver
                 if (bestDistance == null || bestDistance > _nodes[child].WinDistance)
                 {
                     bestDistance = _nodes[child].WinDistance;
-                    bestMove = _nodes[child].PrevMove;
+                    bestMove = child.TheseusPosition - state.TheseusPosition;
                 }
             }
         }

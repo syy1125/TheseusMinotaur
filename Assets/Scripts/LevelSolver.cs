@@ -70,6 +70,10 @@ public class LevelSolver : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Informs the solver of the current game state.
+    /// This will update the solution being shown.
+    /// </summary>
     public void SetGameState(GameState currentState)
     {
         _currentState = currentState;
