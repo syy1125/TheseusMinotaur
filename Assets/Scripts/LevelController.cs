@@ -15,6 +15,7 @@ public class LevelController : MonoBehaviour
     public float AnimationTime = 0.1f;
 
     [Header("References")]
+    public GameController GameController;
     public Transform TheseusTransform;
     public Transform MinotaurTransform;
 
@@ -56,26 +57,6 @@ public class LevelController : MonoBehaviour
         WaitAction.Disable();
     }
 
-    private void Start()
-    {
-        LoadLevel(new GameLevel
-        {
-            Width = 3,
-            Height = 3,
-            TheseusX = 1,
-            TheseusY = 2,
-            MinotaurX = 1,
-            MinotaurY = 0,
-            ExitX = 3,
-            ExitY = 1,
-            Walls = new[] {
-                new Wall{X = 1, Y = 0, Side = 0},
-                new Wall{X = 1, Y = 1, Side = 0},
-                new Wall{X = 1, Y = 1, Side = 1},
-            }
-        });
-    }
-
     #region Level Loading
 
     public void LoadLevel(GameLevel level)
@@ -96,7 +77,7 @@ public class LevelController : MonoBehaviour
         {
             if (child != TheseusTransform && child != MinotaurTransform)
             {
-                Destroy(child);
+                Destroy(child.gameObject);
             }
         }
     }
@@ -235,12 +216,23 @@ public class LevelController : MonoBehaviour
             yield return StartCoroutine(AnimateGamePiece(TheseusTransform, moveResult.TheseusStartPosition, moveResult.TheseusStopPosition));
         }
 
+        if (_gameLogic.IsWin())
+        {
+            GameController.OpenWinScreen();
+            EndAnimation();
+            yield break;
+        }
+
         for (int i = 0; i < moveResult.MinotaurPath.Count - 1; i++)
         {
             yield return StartCoroutine(AnimateGamePiece(MinotaurTransform, moveResult.MinotaurPath[i], moveResult.MinotaurPath[i + 1]));
         }
 
-        _moveAnimation = null;
+        if (_gameLogic.IsLoss())
+        {
+            GameController.OpenLossScreen();
+        }
+        EndAnimation();
     }
 
     private IEnumerator AnimateGamePiece(Transform gamePiece, Vector2 start, Vector2 stop)
@@ -255,5 +247,10 @@ public class LevelController : MonoBehaviour
         }
 
         gamePiece.localPosition = stop;
+    }
+
+    private void EndAnimation()
+    {
+        _moveAnimation = null;
     }
 }

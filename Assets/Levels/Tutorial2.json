@@ -1,0 +1,44 @@
+{
+    "Name": "Tutorial 2",
+    "Comment": "The same as the second level in the web sample game. The first three levels are copied from the web sample game as test levels.",
+    "Width": 7,
+    "Height": 4,
+    "TheseusX": 2,
+    "TheseusY": 2,
+    "MinotaurX": 0,
+    "MinotaurY": 2,
+    "ExitX": 1,
+    "ExitY": -1,
+    "Walls": [
+        {
+            "X": 0,
+            "Y": 2,
+            "Side": 1
+        },
+        {
+            "X": 1,
+            "Y": 1,
+            "Side": 0
+        },
+        {
+            "X": 1,
+            "Y": 2,
+            "Side": 1
+        },
+        {
+            "X": 4,
+            "Y": 1,
+            "Side": 1
+        },
+        {
+            "X": 5,
+            "Y": 0,
+            "Side": 0
+        },
+        {
+            "X": 5,
+            "Y": 1,
+            "Side": 1
+        }
+    ]
+}
