@@ -102,6 +102,7 @@ public class LevelController : MonoBehaviour
         }
     }
 
+    // Scale the grid as necessary to make sure all of it remains visible in the camera.
     private void ScaleGrid(GameLevel level)
     {
         Vector2 center = new Vector2((level.Width - 1) / 2f, (level.Height - 1) / 2f);
@@ -241,6 +242,7 @@ public class LevelController : MonoBehaviour
 
         if (moveResult != null)
         {
+            // Ability to undo/redo may have changed because of this move.
             UndoButton.interactable = _gameLogic.CanUndo();
             RedoButton.interactable = _gameLogic.CanRedo();
             _moveAnimation = StartCoroutine(AnimateGameMove(moveResult));
@@ -250,6 +252,8 @@ public class LevelController : MonoBehaviour
 
     #region Animation
 
+    // Animates all the game piece movements.
+    // This coroutine first moves Theseus, then checks for win condition, then moves minotaur, then checks for loss condition.
     private IEnumerator AnimateGameMove(MoveResult moveResult)
     {
         if (moveResult.TheseusStopPosition != moveResult.TheseusStartPosition)
@@ -344,6 +348,7 @@ public class LevelController : MonoBehaviour
         SyncGameState();
     }
 
+    // Restart the level, interrupting animation as necessary.
     public void RestartLevel()
     {
         if (_moveAnimation != null)

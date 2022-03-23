@@ -76,18 +76,6 @@ public class GameLogic
         _currentStateIndex = 0;
     }
 
-    private void ValidatePosition(Vector2Int position)
-    {
-        if (position.x < 0 || position.x >= _width)
-        {
-            throw new ArgumentException();
-        }
-        if (position.y < 0 || position.y >= _height)
-        {
-            throw new ArgumentException();
-        }
-    }
-
     #region Win and Lose
 
     public bool IsWin()
@@ -179,6 +167,9 @@ public class GameLogic
         return new MoveResult(theseusStartPosition, theseusPosition, minotaurPath);
     }
 
+    // Compute the path taken by the minotaur given the current positions of the actors.
+    // Minotaur moves up to 2 steps each turn.
+    // The return value is in the same format as `MoveResult.MinotaurPath`.
     private List<Vector2Int> GetMinotaurPath(Vector2Int theseusPosition, Vector2Int minotaurPosition)
     {
         Vector2Int firstStep = GetMinotaurStep(theseusPosition, minotaurPosition);
@@ -248,9 +239,14 @@ public class GameLogic
 
     public GameState GetCurrentState() => _history[_currentStateIndex];
 
+    /// <summary>
+    /// Loads a given game state, discarding all history.
+    /// Intended for use in game solver.
+    /// </summary>
     public void LoadState(GameState state)
     {
-        _history = new List<GameState> { state };
+        _history.Clear();
+        _history.Add(state);
         _currentStateIndex = 0;
     }
 

@@ -1,6 +1,7 @@
+using System;
 using UnityEngine;
 
-public class GameState
+public class GameState : System.IEquatable<GameState>
 {
     public readonly Vector2Int TheseusPosition;
     public readonly Vector2Int MinotaurPosition;
@@ -9,5 +10,17 @@ public class GameState
     {
         TheseusPosition = theseusPosition;
         MinotaurPosition = minotaurPosition;
+    }
+
+    public bool Equals(GameState otherState)
+    {
+        if (ReferenceEquals(this, otherState)) return true;
+        if (otherState == null) return false;
+        return this.TheseusPosition == otherState.TheseusPosition && this.MinotaurPosition == otherState.MinotaurPosition;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(TheseusPosition, MinotaurPosition);
     }
 }
