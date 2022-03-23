@@ -1,0 +1,84 @@
+{
+    "Name": "Solver 1",
+    "Comment": "I had a lot of trouble when trying to solve this level in the web example, so I thought it might be a good idea to test out my solver and see if it can solve this level.",
+    "Width": 6,
+    "Height": 6,
+    "TheseusX": 4,
+    "TheseusY": 1,
+    "MinotaurX": 0,
+    "MinotaurY": 1,
+    "ExitX": 1,
+    "ExitY": 6,
+    "Walls": [
+        {
+            "X": 0,
+            "Y": 1,
+            "Side": 0
+        },
+        {
+            "X": 0,
+            "Y": 2,
+            "Side": 1
+        },
+        {
+            "X": 1,
+            "Y": 4,
+            "Side": 0
+        },
+        {
+            "X": 2,
+            "Y": 0,
+            "Side": 0
+        },
+        {
+            "X": 2,
+            "Y": 3,
+            "Side": 1
+        },
+        {
+            "X": 2,
+            "Y": 4,
+            "Side": 1
+        },
+        {
+            "X": 3,
+            "Y": 2,
+            "Side": 1
+        },
+        {
+            "X": 4,
+            "Y": 1,
+            "Side": 0
+        },
+        {
+            "X": 4,
+            "Y": 1,
+            "Side": 1
+        },
+        {
+            "X": 4,
+            "Y": 2,
+            "Side": 1
+        },
+        {
+            "X": 4,
+            "Y": 3,
+            "Side": 0
+        },
+        {
+            "X": 4,
+            "Y": 3,
+            "Side": 1
+        },
+        {
+            "X": 4,
+            "Y": 4,
+            "Side": 0
+        },
+        {
+            "X": 4,
+            "Y": 5,
+            "Side": 1
+        }
+    ]
+}
