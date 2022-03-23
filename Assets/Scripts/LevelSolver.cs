@@ -19,42 +19,17 @@ public class LevelSolver : MonoBehaviour
     private GameState _currentState;
     private GameLogic _gameLogic;
     private GameSolver _gameSolver;
-    private Coroutine _solveCoroutine;
 
     public void LoadLevel(GameLevel level)
     {
-        if (_solveCoroutine != null)
-        {
-            StopCoroutine(_solveCoroutine);
-            _solveCoroutine = null;
-        }
-
         _gameLogic = new GameLogic(level);
         _gameSolver = new GameSolver(level);
-        _solveCoroutine = StartCoroutine(SolveLevel());
+        // Currently, the solver is being run synchronously.
+        // At one point it was done asynchronously using System.Threading.Tasks system, but that doesn't play nice with the WebGL build.
+        // In the future,we could try running the solver asynchronously using Unity's Job system if that really becomes an issue.
+        _gameSolver.RunSearch();
 
-        ToggleSolutionButton.interactable = false;
-        ToggleSolutionButton.GetComponentInChildren<TMP_Text>().text = "Solver is running...";
         SolutionText.gameObject.SetActive(false);
-    }
-
-    private IEnumerator SolveLevel()
-    {
-        Task solveTask = Task.Run(_gameSolver.RunSearch);
-
-        float startTime = Time.time;
-        int frames = 0;
-
-        while (!solveTask.IsCompleted)
-        {
-            frames++;
-            yield return null;
-        }
-
-        Debug.Log($"Solver final state is {solveTask.Status}; done in {(Time.time - startTime):0.00}s, {frames} frames");
-        _solveCoroutine = null;
-
-        ToggleSolutionButton.interactable = true;
         ToggleSolutionButton.GetComponentInChildren<TMP_Text>().text = "Show solution";
     }
 
