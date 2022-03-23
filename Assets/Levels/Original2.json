@@ -1,0 +1,34 @@
+{
+    "Name": "Original 2",
+    "Comment": "When playing, I found two intersting dynamics that emerge from the game mechanics. One I call \"close encounter\", where Theseus barely manages to hide behind a wall to block the minotaur. The other I call \"role reversal\", where I often find thaat Theseus and the minotaur would end up swapping places during a game. I try to combine the two and demostrate them in this level. I also took this opportunity to demostrate that having more distance between Theseus and minotaur isn't always beneficial, as Theseus may end up having a hard time getting to cover.",
+    "Width": 7,
+    "Height": 5,
+    "TheseusX": 4,
+    "TheseusY": 2,
+    "MinotaurX": 4,
+    "MinotaurY": 1,
+    "ExitX": 4,
+    "ExitY": -1,
+    "Walls": [
+        {
+            "X": 3,
+            "Y": 1,
+            "Side": 0
+        },
+        {
+            "X": 5,
+            "Y": 2,
+            "Side": 0
+        },
+        {
+            "X": 5,
+            "Y": 3,
+            "Side": 1
+        },
+        {
+            "X": 6,
+            "Y": 3,
+            "Side": 0
+        }
+    ]
+}
