@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
+using TMPro;
 
 public class LevelController : MonoBehaviour
 {
@@ -16,8 +18,11 @@ public class LevelController : MonoBehaviour
 
     [Header("References")]
     public GameController GameController;
+    public TMP_Text CommentText;
     public Transform TheseusTransform;
     public Transform MinotaurTransform;
+    public Button UndoButton;
+    public Button RedoButton;
 
     [Header("Prefabs")]
     public GameObject TilePrefab;
@@ -33,6 +38,11 @@ public class LevelController : MonoBehaviour
     public InputAction MoveWestAction;
     public InputAction WaitAction;
 
+    [Space]
+    public InputAction UndoAction;
+    public InputAction RedoAction;
+    public InputAction RestartLevelAction;
+
     private GameLogic _gameLogic;
 
     // The coroutine that animates the game piece movement.
@@ -46,6 +56,10 @@ public class LevelController : MonoBehaviour
         MoveEastAction.Enable();
         MoveWestAction.Enable();
         WaitAction.Enable();
+
+        UndoAction.Enable();
+        RedoAction.Enable();
+        RestartLevelAction.Enable();
     }
 
     private void OnDisable()
@@ -55,6 +69,10 @@ public class LevelController : MonoBehaviour
         MoveEastAction.Disable();
         MoveWestAction.Disable();
         WaitAction.Disable();
+
+        UndoAction.Disable();
+        RedoAction.Disable();
+        RestartLevelAction.Disable();
     }
 
     #region Level Loading
@@ -68,7 +86,9 @@ public class LevelController : MonoBehaviour
         SpawnTiles(level);
         SpawnBoundaryWalls(level);
         SpawnInnerWalls(level);
-        PositionGamePieces(level);
+        SyncGameState();
+
+        CommentText.text = $"<b>{level.Name}</b>:\n{level.Comment}";
     }
 
     private void CleanupPreviousGrid()
@@ -166,19 +186,36 @@ public class LevelController : MonoBehaviour
         }
     }
 
-    private void PositionGamePieces(GameLevel level)
-    {
-        TheseusTransform.localPosition = new Vector3(level.TheseusX, level.TheseusY);
-        MinotaurTransform.localPosition = new Vector3(level.MinotaurX, level.MinotaurY);
-    }
-
     #endregion
 
     private void Update()
     {
+        HandleCommandInputs();
+        HandleMoveInputs();
+    }
+
+    private void HandleCommandInputs()
+    {
+        if (UndoAction.triggered && _gameLogic.CanUndo())
+        {
+            Undo();
+        }
+        if (RedoAction.triggered && _gameLogic.CanRedo())
+        {
+            Redo();
+        }
+        if (RestartLevelAction.triggered)
+        {
+            RestartLevel();
+        }
+    }
+
+    private void HandleMoveInputs()
+    {
         if (_moveAnimation != null) return;
 
         Vector2Int theseusPosition = _gameLogic.GetCurrentState().TheseusPosition;
+        // Meaningful null. If moveResult is null, then no move was executed.
         MoveResult moveResult = null;
 
         if (MoveNorthAction.triggered && _gameLogic.CanMoveNorth(theseusPosition))
@@ -204,10 +241,14 @@ public class LevelController : MonoBehaviour
 
         if (moveResult != null)
         {
+            UndoButton.interactable = _gameLogic.CanUndo();
+            RedoButton.interactable = _gameLogic.CanRedo();
             _moveAnimation = StartCoroutine(AnimateGameMove(moveResult));
-            return;
         }
     }
+
+
+    #region Animation
 
     private IEnumerator AnimateGameMove(MoveResult moveResult)
     {
@@ -252,5 +293,76 @@ public class LevelController : MonoBehaviour
     private void EndAnimation()
     {
         _moveAnimation = null;
+    }
+
+    private void InterruptAnimation()
+    {
+        if (_moveAnimation != null)
+        {
+            StopAllCoroutines();
+            _moveAnimation = null;
+        }
+
+        EndAnimation();
+    }
+
+    #endregion
+
+    #region Callbacks
+
+    // Callback used by the "Wait" button
+    public void Wait()
+    {
+        if (_moveAnimation != null) return;
+
+        if (_gameLogic.IsWin() || _gameLogic.IsLoss()) return;
+        MoveResult moveResult = _gameLogic.MakeMove(Vector2Int.zero);
+        _moveAnimation = StartCoroutine(AnimateGameMove(moveResult));
+    }
+
+    // Undo the last move, interrupting animation as necessary.
+    public void Undo()
+    {
+        if (_moveAnimation != null)
+        {
+            InterruptAnimation();
+        }
+
+        _gameLogic.Undo();
+        SyncGameState();
+    }
+
+    // Redo the next move, interrupting animation as necessary.
+    public void Redo()
+    {
+        if (_moveAnimation != null)
+        {
+            InterruptAnimation();
+        }
+
+        _gameLogic.Redo();
+        SyncGameState();
+    }
+
+    public void RestartLevel()
+    {
+        if (_moveAnimation != null)
+        {
+            InterruptAnimation();
+        }
+
+        GameController.RestartLevel();
+    }
+
+    #endregion
+
+    private void SyncGameState()
+    {
+        GameState currentState = _gameLogic.GetCurrentState();
+        TheseusTransform.localPosition = (Vector2)currentState.TheseusPosition;
+        MinotaurTransform.localPosition = (Vector2)currentState.MinotaurPosition;
+
+        UndoButton.interactable = _gameLogic.CanUndo();
+        RedoButton.interactable = _gameLogic.CanRedo();
     }
 }
