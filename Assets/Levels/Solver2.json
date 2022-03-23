@@ -1,0 +1,94 @@
+{
+    "Name": "Solver 2",
+    "Comment": "I'm stuck on this one from the web example.",
+    "Width": 9,
+    "Height": 8,
+    "TheseusX": 8,
+    "TheseusY": 7,
+    "MinotaurX": 0,
+    "MinotaurY": 7,
+    "ExitX": 3,
+    "ExitY": 8,
+    "Walls": [
+        {
+            "X": 0,
+            "Y": 2,
+            "Side": 1
+        },
+        {
+            "X": 0,
+            "Y": 3,
+            "Side": 1
+        },
+        {
+            "X": 0,
+            "Y": 4,
+            "Side": 1
+        },
+        {
+            "X": 0,
+            "Y": 6,
+            "Side": 0
+        },
+        {
+            "X": 1,
+            "Y": 3,
+            "Side": 0
+        },
+        {
+            "X": 1,
+            "Y": 6,
+            "Side": 0
+        },
+        {
+            "X": 2,
+            "Y": 4,
+            "Side": 1
+        },
+        {
+            "X": 3,
+            "Y": 0,
+            "Side": 0
+        },
+        {
+            "X": 3,
+            "Y": 4,
+            "Side": 0
+        },
+        {
+            "X": 3,
+            "Y": 4,
+            "Side": 1
+        },
+        {
+            "X": 5,
+            "Y": 6,
+            "Side": 0
+        },
+        {
+            "X": 7,
+            "Y": 1,
+            "Side": 1
+        },
+        {
+            "X": 7,
+            "Y": 2,
+            "Side": 0
+        },
+        {
+            "X": 7,
+            "Y": 2,
+            "Side": 1
+        },
+        {
+            "X": 7,
+            "Y": 3,
+            "Side": 1
+        },
+        {
+            "X": 7,
+            "Y": 4,
+            "Side": 1
+        }
+    ]
+}
