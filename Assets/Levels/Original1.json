@@ -1,0 +1,39 @@
+{
+    "Name": "Original 1",
+    "Comment": "For my first original level, I'm starting simple. This maze looks like a race to the end, but the Minotaur will easily catch up to the player. The key here, what this level is trying to highlight, is that the player need to manipulate the minotaur into running into obstacles.",
+    "Width": 3,
+    "Height": 8,
+    "TheseusX": 1,
+    "TheseusY": 3,
+    "MinotaurX": 1,
+    "MinotaurY": 0,
+    "ExitX": 1,
+    "ExitY": 8,
+    "Walls": [
+        {
+            "X": 0,
+            "Y": 1,
+            "Side": 0
+        },
+        {
+            "X": 0,
+            "Y": 3,
+            "Side": 1
+        },
+        {
+            "X": 0,
+            "Y": 5,
+            "Side": 0
+        },
+        {
+            "X": 2,
+            "Y": 0,
+            "Side": 0
+        },
+        {
+            "X": 2,
+            "Y": 4,
+            "Side": 0
+        }
+    ]
+}
