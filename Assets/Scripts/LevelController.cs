@@ -18,6 +18,7 @@ public class LevelController : MonoBehaviour
 
     [Header("References")]
     public GameController GameController;
+    public LevelSolver LevelSolver;
     public TMP_Text CommentText;
     public Transform TheseusTransform;
     public Transform MinotaurTransform;
@@ -80,6 +81,7 @@ public class LevelController : MonoBehaviour
     public void LoadLevel(GameLevel level)
     {
         _gameLogic = new GameLogic(level);
+        LevelSolver.LoadLevel(level);
 
         CleanupPreviousGrid();
         ScaleGrid(level);
@@ -246,6 +248,7 @@ public class LevelController : MonoBehaviour
             UndoButton.interactable = _gameLogic.CanUndo();
             RedoButton.interactable = _gameLogic.CanRedo();
             _moveAnimation = StartCoroutine(AnimateGameMove(moveResult));
+            LevelSolver.SetGameState(_gameLogic.GetCurrentState());
         }
     }
 
@@ -369,5 +372,7 @@ public class LevelController : MonoBehaviour
 
         UndoButton.interactable = _gameLogic.CanUndo();
         RedoButton.interactable = _gameLogic.CanRedo();
+
+        LevelSolver.SetGameState(currentState);
     }
 }

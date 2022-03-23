@@ -15,9 +15,12 @@ public class GameSolver
     {
         // The parent node from which this game state was first discovered. Does not change once assigned.
         public GameState Parent;
+        // The move that led from parent to this child.
         public Vector2Int PrevMove;
         public List<GameState> Children;
-        public bool IsWin;
+        // Nulable int. If null, the state is not necessarily a winning state. If not null, indicates the minimum number of moves until a win.
+        public int? WinDistance;
+        // A state is a loss if all its children are loss.
         public bool IsLoss;
     }
 
@@ -29,12 +32,16 @@ public class GameSolver
     // `_rootState` is actually immutable.
     private readonly GameState _rootState;
 
+    public bool Completed { get; private set; }
+
     public GameSolver(GameLevel level)
     {
         _gameLogic = new GameLogic(level);
         _nodes = new Dictionary<GameState, SearchNode>();
         _exploreQueue = new Queue<GameState>();
         _rootState = _gameLogic.GetCurrentState();
+
+        Completed = false;
     }
 
     #region Tree Search
@@ -49,7 +56,7 @@ public class GameSolver
             Parent = null,
             PrevMove = Vector2Int.zero,
             Children = null,
-            IsWin = false,
+            WinDistance = null,
             IsLoss = false
         });
         _exploreQueue.Enqueue(_rootState);
@@ -66,8 +73,9 @@ public class GameSolver
                 _nodes[exploreState].Children = new List<GameState>();
                 PropagateWin(exploreState);
 
-                // We could go on and explore the entire state tree. We could also say "good enough, I know how to win".
-                // I need to compare how long it takes to run each of the two options.
+                // We could go on and explore the entire state tree. This lets the solver provide advice every step of the way.
+                // We could also say "good enough, I know how to win" and stop here.
+                // If I have time, I can compare how long it takes to run each of the two options.
                 // return;
             }
             else if (_gameLogic.IsLoss())
@@ -83,7 +91,8 @@ public class GameSolver
                 currentNode.Children = new List<GameState>();
 
                 // If some or all children are fully explored, we might already know the win/loss situation.
-                bool isWin = false, isLoss = true;
+                int? winDistance = null;
+                bool isLoss = true;
                 foreach (Tuple<Vector2Int, GameState> childState in childStates)
                 {
                     currentNode.Children.Add(childState.Item2);
@@ -91,9 +100,9 @@ public class GameSolver
                     if (_nodes.TryGetValue(childState.Item2, out SearchNode childNode))
                     {
                         // Child already discovered by another node
-                        if (childNode.IsWin)
+                        if (childNode.WinDistance != null)
                         {
-                            isWin = true;
+                            winDistance = winDistance == null ? childNode.WinDistance + 1 : Mathf.Min(winDistance.Value + 1, childNode.WinDistance.Value + 1);
                         }
                         if (!childNode.IsLoss)
                         {
@@ -116,22 +125,27 @@ public class GameSolver
                     }
                 }
 
-                currentNode.IsWin = isWin;
+                currentNode.WinDistance = winDistance;
                 currentNode.IsLoss = isLoss;
             }
         }
+
+        Completed = true;
     }
 
     private void PropagateWin(GameState winState)
     {
         GameState currentState = winState;
+        int winDistance = 0;
+
         while (currentState != null)
         {
             SearchNode node = _nodes[currentState];
-            if (node.IsWin) return; // Already know it's a winning state
-            node.IsWin = true;
-            Debug.Log(currentState + " is a winning state");
+            if (node.WinDistance != null && node.WinDistance < winDistance) return; // It's a better winning state
+            node.WinDistance = winDistance;
+
             currentState = node.Parent;
+            winDistance++;
         }
     }
 
@@ -169,6 +183,7 @@ public class GameSolver
         List<Tuple<Vector2Int, GameState>> children = new List<Tuple<Vector2Int, GameState>>();
 
         var waitState = GetCurrentChild(Vector2Int.zero);
+
         if (!waitState.Item2.Equals(parent))
         {
             children.Add(waitState);
@@ -213,20 +228,30 @@ public class GameSolver
     {
         SearchNode node = _nodes[state];
 
-        if (!node.IsWin)
+        if (node.WinDistance == null)
         {
             return null;
         }
 
+        int? bestDistance = null;
+        Vector2Int? bestMove = null;
         foreach (GameState child in node.Children)
         {
-            if (_nodes[child].IsWin)
+            if (_nodes[child].WinDistance != null)
             {
-                return _nodes[child].PrevMove;
+                if (bestDistance == null || bestDistance > _nodes[child].WinDistance)
+                {
+                    bestDistance = _nodes[child].WinDistance;
+                    bestMove = _nodes[child].PrevMove;
+                }
             }
         }
 
-        throw new Exception("Failed to find winning move in a win state");
+        if (bestMove == null)
+        {
+            throw new Exception("Failed to find winning move in a win state");
+        }
+        return bestMove;
     }
 
     #endregion
