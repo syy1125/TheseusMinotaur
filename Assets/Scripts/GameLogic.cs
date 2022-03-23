@@ -44,6 +44,7 @@ public class GameLogic
 
     private List<GameState> _history;
     private int _currentStateIndex;
+    private int _maxRedo;
 
     public GameLogic(GameLevel level)
     {
@@ -74,6 +75,7 @@ public class GameLogic
             new GameState(new Vector2Int(level.TheseusX, level.TheseusY), new Vector2Int(level.MinotaurX, level.MinotaurY))
         };
         _currentStateIndex = 0;
+        _maxRedo = 0;
     }
 
     #region Win and Lose
@@ -124,7 +126,7 @@ public class GameLogic
             throw new InvalidGameMoveException();
         }
 
-        Vector2Int theseusStartPosition = GetCurrentState().TheseusPosition;
+        Vector2Int theseusPosition = GetCurrentState().TheseusPosition;
 
         if (moveDirection == Vector2Int.zero)
         {
@@ -132,19 +134,19 @@ public class GameLogic
         }
         else if (moveDirection == Vector2Int.up)
         {
-            if (!CanMoveNorth(theseusStartPosition)) throw new InvalidGameMoveException();
+            if (!CanMoveNorth(theseusPosition)) throw new InvalidGameMoveException();
         }
         else if (moveDirection == Vector2Int.down)
         {
-            if (!CanMoveSouth(theseusStartPosition)) throw new InvalidGameMoveException();
+            if (!CanMoveSouth(theseusPosition)) throw new InvalidGameMoveException();
         }
         else if (moveDirection == Vector2Int.right)
         {
-            if (!CanMoveEast(theseusStartPosition)) throw new InvalidGameMoveException();
+            if (!CanMoveEast(theseusPosition)) throw new InvalidGameMoveException();
         }
         else if (moveDirection == Vector2Int.left)
         {
-            if (!CanMoveWest(theseusStartPosition)) throw new InvalidGameMoveException();
+            if (!CanMoveWest(theseusPosition)) throw new InvalidGameMoveException();
         }
         else
         {
@@ -152,19 +154,36 @@ public class GameLogic
         }
 
         // At this point, we've ascertained that the move is valid.
+        return ForceMove(moveDirection);
+    }
 
+    /// <summary>
+    /// Force an execution of a move, assuming that it is valid.
+    /// Intended for use in game solver, where performace is important.
+    /// For a safer method that does the same thing, use `MakeMove`.
+    /// </summary>
+    public MoveResult ForceMove(Vector2Int moveDirection)
+    {
+        Vector2Int theseusStartPosition = GetCurrentState().TheseusPosition;
         Vector2Int theseusPosition = theseusStartPosition + moveDirection;
         List<Vector2Int> minotaurPath = GetMinotaurPath(theseusPosition, GetCurrentState().MinotaurPosition);
 
-        // If there's redo history, they are no longer valid.
-        if (_history.Count - 1 > _currentStateIndex)
-        {
-            _history.RemoveRange(_currentStateIndex + 1, _history.Count - _currentStateIndex - 1);
-        }
-        _history.Add(new GameState(theseusPosition, minotaurPath[minotaurPath.Count - 1]));
         _currentStateIndex++;
+        // If there's redo history, they are no longer valid.
+        _maxRedo = _currentStateIndex;
+
+        GameState state = new GameState(theseusPosition, minotaurPath[minotaurPath.Count - 1]);
+        if (_currentStateIndex < _history.Count)
+        {
+            _history[_currentStateIndex] = state;
+        }
+        else
+        {
+            _history.Add(state);
+        }
 
         return new MoveResult(theseusStartPosition, theseusPosition, minotaurPath);
+
     }
 
     // Compute the path taken by the minotaur given the current positions of the actors.
@@ -218,7 +237,7 @@ public class GameLogic
 
     public bool CanRedo()
     {
-        return _currentStateIndex < _history.Count - 1;
+        return _currentStateIndex < _maxRedo;
     }
 
     public void Undo()
