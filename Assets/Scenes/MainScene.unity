@@ -2969,7 +2969,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   StepCount: 5
   ToggleSolutionButton: {fileID: 1229082093}
-  SolutionText: {fileID: 0}
+  SolutionText: {fileID: 176580640}
 --- !u!1 &1281219857
 GameObject:
   m_ObjectHideFlags: 0
@@ -4111,6 +4111,7 @@ MonoBehaviour:
   - {fileID: 4900000, guid: bd69a5c5e16a77c46a50620eb027ada2, type: 3}
   - {fileID: 4900000, guid: 0b745c3062e53554ebc4973589af6ae6, type: 3}
   - {fileID: 4900000, guid: 7e934f2c9cf987644ab0ae850d6d98c4, type: 3}
+  - {fileID: 4900000, guid: 6325142182594f84f9f06d77faf6b100, type: 3}
 --- !u!1 &1988348252
 GameObject:
   m_ObjectHideFlags: 0
