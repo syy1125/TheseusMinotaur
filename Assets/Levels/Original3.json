@@ -1,0 +1,69 @@
+{
+    "Name": "Original 3",
+    "Comment": "Looking at my previous 2 levels, I realized that I never really gave a point to waiting. That's what I'm trying to make here - a level where the strategy involves waiting. I also quite like the aesthetic of Theseus waiting for just the right moment to dash to the side, making the minotaur run into a wall.",
+    "Width": 5,
+    "Height": 9,
+    "TheseusX": 4,
+    "TheseusY": 0,
+    "MinotaurX": 4,
+    "MinotaurY": 8,
+    "ExitX": 5,
+    "ExitY": 6,
+    "Walls": [
+        {
+            "X": 3,
+            "Y": 0,
+            "Side": 0
+        },
+        {
+            "X": 2,
+            "Y": 1,
+            "Side": 1
+        },
+        {
+            "X": 3,
+            "Y": 4,
+            "Side": 0
+        },
+        {
+            "X": 3,
+            "Y": 6,
+            "Side": 0
+        },
+        {
+            "X": 3,
+            "Y": 6,
+            "Side": 1
+        },
+        {
+            "X": 3,
+            "Y": 2,
+            "Side": 0
+        },
+        {
+            "X": 1,
+            "Y": 2,
+            "Side": 0
+        },
+        {
+            "X": 1,
+            "Y": 3,
+            "Side": 1
+        },
+        {
+            "X": 1,
+            "Y": 4,
+            "Side": 1
+        },
+        {
+            "X": 1,
+            "Y": 5,
+            "Side": 1
+        },
+        {
+            "X": 1,
+            "Y": 6,
+            "Side": 1
+        }
+    ]
+}
