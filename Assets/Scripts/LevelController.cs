@@ -6,6 +6,11 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using TMPro;
 
+/// <summary>
+/// Controls the player interaction with a given level.
+/// Handles managing the game logic object and managing the visual representation of the game.
+/// Handles player input. Even though restarting level is <c>GameController</c>'s job, the hotkey for restarting the level is also being managed here so that all input handing is in one script.
+/// </summary>
 public class LevelController : MonoBehaviour
 {
     /// <summary>
@@ -215,6 +220,7 @@ public class LevelController : MonoBehaviour
 
     private void HandleMoveInputs()
     {
+        // Ignore player input when a move is being animated.
         if (_moveAnimation != null) return;
 
         Vector2Int theseusPosition = _gameLogic.GetCurrentState().TheseusPosition;
@@ -247,8 +253,9 @@ public class LevelController : MonoBehaviour
             // Ability to undo/redo may have changed because of this move.
             UndoButton.interactable = _gameLogic.CanUndo();
             RedoButton.interactable = _gameLogic.CanRedo();
-            _moveAnimation = StartCoroutine(AnimateGameMove(moveResult));
             LevelSolver.SetGameState(_gameLogic.GetCurrentState());
+
+            _moveAnimation = StartCoroutine(AnimateGameMove(moveResult));
         }
     }
 
@@ -364,6 +371,7 @@ public class LevelController : MonoBehaviour
 
     #endregion
 
+    // Synchronize visual representation with actual game state.
     private void SyncGameState()
     {
         GameState currentState = _gameLogic.GetCurrentState();

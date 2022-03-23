@@ -7,6 +7,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+/// <summary>
+/// Unity script responsible for managing the game solver and outputting its solution to the screen.
+/// </summary>
 public class LevelSolver : MonoBehaviour
 {
     public int StepCount = 3;
@@ -107,7 +110,7 @@ public class LevelSolver : MonoBehaviour
         }
         else
         {
-            // Returning a value means there is a way out
+            // Returning a value means there is a way out. Build a string out of the instructions.
             StringBuilder builder = new StringBuilder($"Winning moves up to {StepCount} steps:");
             builder.AppendLine().Append(GetHumanReadableDirection(move.Value));
 

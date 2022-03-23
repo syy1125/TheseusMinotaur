@@ -4,10 +4,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+/// <summary>
+/// A <c>GameLevel</c> object describes a single map of the Theseus and the Minotaur game.
+// It contains the map dimensions, the initial positions of the two actors, the position of the exit, and the walls present inside the map.
+/// </summary>
 [Serializable]
 public class GameLevel
 {
+    /// <summary>
+    /// Name of the level. Shows up on the level selection screen and functions as a title for the comment.
+    /// </summary>
     public string Name;
+    /// <summary>
+    /// Personal comment to be shown on the side panel.
+    /// </summary>
     public string Comment;
     public int Width;
     public int Height;

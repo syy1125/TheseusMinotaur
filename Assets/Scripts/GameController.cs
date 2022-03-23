@@ -4,6 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+/// <summary>
+/// The controller responsible for overall game flow.
+/// Handles level selection, reloading, next level, and win/loss states.
+/// </summary>
 public class GameController : MonoBehaviour
 {
     [Header("References")]

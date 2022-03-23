@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
+// Test script to check that solver is at least somewhat working as intended.
 public class GameSolverTest : MonoBehaviour
 {
     private IEnumerator Start()
