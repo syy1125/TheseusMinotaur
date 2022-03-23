@@ -218,23 +218,23 @@ public class LevelController : MonoBehaviour
         // Meaningful null. If moveResult is null, then no move was executed.
         MoveResult moveResult = null;
 
-        if (MoveNorthAction.triggered && _gameLogic.CanMoveNorth(theseusPosition))
+        if (MoveNorthAction.ReadValue<float>() > 0.5f && _gameLogic.CanMoveNorth(theseusPosition))
         {
             moveResult = _gameLogic.MakeMove(Vector2Int.up);
         }
-        else if (MoveSouthAction.triggered && _gameLogic.CanMoveSouth(theseusPosition))
+        else if (MoveSouthAction.ReadValue<float>() > 0.5f && _gameLogic.CanMoveSouth(theseusPosition))
         {
             moveResult = _gameLogic.MakeMove(Vector2Int.down);
         }
-        else if (MoveEastAction.triggered && _gameLogic.CanMoveEast(theseusPosition))
+        else if (MoveEastAction.ReadValue<float>() > 0.5f && _gameLogic.CanMoveEast(theseusPosition))
         {
             moveResult = _gameLogic.MakeMove(Vector2Int.right);
         }
-        else if (MoveWestAction.triggered && _gameLogic.CanMoveWest(theseusPosition))
+        else if (MoveWestAction.ReadValue<float>() > 0.5f && _gameLogic.CanMoveWest(theseusPosition))
         {
             moveResult = _gameLogic.MakeMove(Vector2Int.left);
         }
-        else if (WaitAction.triggered)
+        else if (WaitAction.ReadValue<float>() > 0.5f)
         {
             moveResult = _gameLogic.MakeMove(Vector2Int.zero);
         }
