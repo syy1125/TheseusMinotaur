@@ -96,7 +96,7 @@ public class GameLogic
 
     public bool CanMoveNorth(Vector2Int position)
     {
-        return position.y <= _height - 1 ? !_northWalls[position.x, position.y] : new Vector2Int(position.x, position.y + 1) == _exitPosition;
+        return position.y < _height - 1 ? !_northWalls[position.x, position.y] : new Vector2Int(position.x, position.y + 1) == _exitPosition;
     }
 
     public bool CanMoveSouth(Vector2Int position)
