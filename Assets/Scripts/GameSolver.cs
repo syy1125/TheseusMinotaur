@@ -108,9 +108,11 @@ public class GameSolver
                             Parent = exploreState,
                             PrevMove = childState.Item1
                         });
+                        _exploreQueue.Enqueue(childState.Item2);
 
                         // Since there are unexplored children, we definitely don't know if this is a loss state.
                         isLoss = false;
+
                     }
                 }
 
@@ -128,6 +130,7 @@ public class GameSolver
             SearchNode node = _nodes[currentState];
             if (node.IsWin) return; // Already know it's a winning state
             node.IsWin = true;
+            Debug.Log(currentState + " is a winning state");
             currentState = node.Parent;
         }
     }
@@ -165,27 +168,27 @@ public class GameSolver
     {
         List<Tuple<Vector2Int, GameState>> children = new List<Tuple<Vector2Int, GameState>>();
 
-        GameState waitState = GetCurrentChild(Vector2Int.zero);
-        if (!waitState.Equals(parent))
+        var waitState = GetCurrentChild(Vector2Int.zero);
+        if (!waitState.Item2.Equals(parent))
         {
-            children.Add(Tuple.Create(Vector2Int.zero, waitState));
+            children.Add(waitState);
         }
 
         if (_gameLogic.CanMoveNorth(parent.TheseusPosition))
         {
-            children.Add(Tuple.Create(Vector2Int.up, GetCurrentChild(Vector2Int.up)));
+            children.Add(GetCurrentChild(Vector2Int.up));
         }
         if (_gameLogic.CanMoveSouth(parent.TheseusPosition))
         {
-            children.Add(Tuple.Create(Vector2Int.down, GetCurrentChild(Vector2Int.down)));
+            children.Add(GetCurrentChild(Vector2Int.down));
         }
         if (_gameLogic.CanMoveEast(parent.TheseusPosition))
         {
-            children.Add(Tuple.Create(Vector2Int.right, GetCurrentChild(Vector2Int.right)));
+            children.Add(GetCurrentChild(Vector2Int.right));
         }
         if (_gameLogic.CanMoveWest(parent.TheseusPosition))
         {
-            children.Add(Tuple.Create(Vector2Int.left, GetCurrentChild(Vector2Int.left)));
+            children.Add(GetCurrentChild(Vector2Int.left));
         }
 
         return children;
@@ -194,12 +197,12 @@ public class GameSolver
     // Assuming that the parent state is already loaded into `_gameLogic`, get the child state that results from executing the move.
     // This also automatically reverts the change so that the next call can be made immediately.
     // All in all this is a bit confusing, but I'm trying to keep a balance between readability and performance.
-    private GameState GetCurrentChild(Vector2Int moveDirection)
+    private Tuple<Vector2Int, GameState> GetCurrentChild(Vector2Int moveDirection)
     {
-        _gameLogic.ForceMove(Vector2Int.up);
+        _gameLogic.ForceMove(moveDirection);
         GameState state = _gameLogic.GetCurrentState();
         _gameLogic.Undo();
-        return state;
+        return Tuple.Create(moveDirection, state);
     }
 
     #endregion

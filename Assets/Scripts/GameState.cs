@@ -23,4 +23,9 @@ public class GameState : System.IEquatable<GameState>
     {
         return HashCode.Combine(TheseusPosition, MinotaurPosition);
     }
+
+    public override string ToString()
+    {
+        return $"T={TheseusPosition},M={MinotaurPosition}";
+    }
 }
