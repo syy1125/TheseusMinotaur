@@ -15,7 +15,7 @@ public class GameSolver
     /// Discovered search nodes have been discovered by at least one parent, but their children have not been resolved yet.
     /// Explored search nodes have their children resolved. Here we might also know whether they are a winning state or a losing state.
     /// </summary>
-    /// <remakrs>
+    /// <remarks>
     /// A state is a winning state if any of its children are winning states.
     /// A state is a losing state if all of its children are losing states.
     /// </remarks>
@@ -58,7 +58,7 @@ public class GameSolver
         Completed = false;
     }
 
-    #region Tree Search
+    #region Breadth First Search
 
     public void RunSearch()
     {
